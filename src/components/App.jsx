@@ -1,16 +1,36 @@
+import { useState } from 'react';
+import ContactList from './ContactList';
+import ContactForm from './ContactForm';
+import Filter from './Filter';
+import useLocalStorageReducer from '../hooks/useLocalStorageReducer';
+
 export const App = () => {
+  const [filter, setFilter] = useState('');
+  const [contacts, dispatch] = useLocalStorageReducer([], 'contacts');
+
+  const filteredContacts = () => {
+    const normalizedFilter = filter.toLowerCase();
+    return contacts.filter(contact =>
+      contact.name.toLowerCase().includes(normalizedFilter)
+    );
+  };
+
   return (
-    <div
-      style={{
-        height: '100vh',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        fontSize: 40,
-        color: '#010101'
-      }}
-    >
-      React homework template
-    </div>
+    <>
+      <h1>Phonebook</h1>
+      <div className="wrap">
+        <ContactForm onSubmit={dispatch} contacts={contacts} />
+
+        <div>
+          <h2>Contacts</h2>
+          <Filter value={filter} onChange={setFilter} />
+          <ContactList
+            filter={filter}
+            contacts={filteredContacts()}
+            onDeleteContact={dispatch}
+          />
+        </div>
+      </div>
+    </>
   );
 };
